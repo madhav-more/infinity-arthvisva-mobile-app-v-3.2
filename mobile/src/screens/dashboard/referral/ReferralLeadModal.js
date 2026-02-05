@@ -288,10 +288,11 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: theme.colors.white,
-        borderRadius: theme.borderRadius.md,
+        borderRadius: 24,
         width: '100%',
-        maxHeight: '85%',
+        maxHeight: '90%',
         ...theme.shadow,
+        overflow: 'hidden',
     },
     header: {
         flexDirection: 'row',
@@ -302,8 +303,10 @@ const styles = StyleSheet.create({
         borderBottomColor: theme.colors.border,
     },
     headerTitle: {
-        ...theme.typography.h3,
-        color: theme.colors.brandTeal,
+        fontSize: 20,
+        fontWeight: '700',
+        color: theme.colors.primary,
+        letterSpacing: -0.5,
     },
     formContent: {
         padding: theme.spacing.md,
@@ -320,13 +323,14 @@ const styles = StyleSheet.create({
         color: theme.colors.error,
     },
     input: {
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-        borderRadius: theme.borderRadius.sm,
-        padding: 12,
+        borderWidth: 1.5,
+        borderColor: '#E2E8F0',
+        borderRadius: 12,
+        padding: 14,
         fontSize: 14,
         color: theme.colors.text,
-        backgroundColor: theme.colors.white,
+        backgroundColor: '#F8FAFC',
+        fontWeight: '500',
     },
     selectInput: {
         flexDirection: 'row',
@@ -360,9 +364,9 @@ const styles = StyleSheet.create({
     },
     cancelButton: {
         flex: 1,
-        padding: 12,
-        backgroundColor: theme.colors.surface,
-        borderRadius: theme.borderRadius.sm,
+        padding: 14,
+        backgroundColor: '#F1F5F9',
+        borderRadius: 12,
         alignItems: 'center',
     },
     cancelButtonText: {
@@ -370,11 +374,12 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     submitButton: {
-        flex: 1,
-        padding: 12,
-        backgroundColor: theme.colors.brandTeal,
-        borderRadius: theme.borderRadius.sm,
+        flex: 2,
+        padding: 14,
+        backgroundColor: theme.colors.primary,
+        borderRadius: 12,
         alignItems: 'center',
+        ...theme.shadow,
     },
     disabledButton: {
         opacity: 0.7,
