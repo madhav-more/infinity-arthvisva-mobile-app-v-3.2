@@ -10,7 +10,7 @@ import {
     SafeAreaView,
     ActivityIndicator,
     Modal,
-    Platform  
+    Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
@@ -22,6 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import theme from '../../../../../constants/theme';
 import { DashboardService } from '../../../../../services/dashboardService';
 import DatePickerInput from '../../../../../components/common/DatePickerInput';
+import GradientButton from '../../../../../components/common/GradientButton';
 
 const MAX_FILE_SIZE_BYTES = 200 * 1024; // 200KB
 
@@ -300,21 +301,13 @@ export default function PersonalLoanFormScreen() {
                     </View>
                 </View>
 
-                <TouchableOpacity
-                    style={[styles.submitBtn, isSubmitting && styles.disabledBtn]}
+                <GradientButton
                     onPress={handleSubmit}
+                    title="Submit Application"
+                    loading={isSubmitting}
                     disabled={isSubmitting}
-                    activeOpacity={0.8}
-                >
-                    {isSubmitting ? (
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                            <ActivityIndicator color="#fff" />
-                            <Text style={styles.submitBtnText}>{statusMsg || "Submitting..."}</Text>
-                        </View>
-                    ) : (
-                        <Text style={styles.submitBtnText}>Submit Application</Text>
-                    )}
-                </TouchableOpacity>
+                    style={{ marginTop: 16, borderRadius: 10 }}
+                />
 
             </ScrollView>
         </SafeAreaView>

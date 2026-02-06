@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import theme from '../constants/theme';
+import GradientButton from '../components/common/GradientButton';
 
 const { width } = Dimensions.get('window');
 
@@ -67,10 +68,14 @@ const HomeScreen = ({ navigation }) => {
                     </View>
                     <Text style={styles.heroTitle}>Unlock Your Dream Home</Text>
                     <Text style={styles.heroSubtitle}>Interest rates starting at just 8.4%* for early applicants.</Text>
-                    <TouchableOpacity style={styles.heroBtn}>
-                        <Text style={styles.heroBtnText}>Apply Now</Text>
-                        <Ionicons name="arrow-forward" size={16} color={theme.colors.primary} />
-                    </TouchableOpacity>
+                    <GradientButton
+                        title="Apply Now"
+                        onPress={() => { }}
+                        colors={['#FFF', '#F8FAFC']}
+                        textStyle={{ color: theme.colors.primary, fontSize: 13, fontWeight: '700' }}
+                        icon={<Ionicons name="arrow-forward" size={16} color={theme.colors.primary} />}
+                        style={{ alignSelf: 'flex-start', paddingVertical: 0, paddingHorizontal: 0, height: 36, borderRadius: 10 }}
+                    />
                 </View>
                 <Image
                     source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135706.png' }}

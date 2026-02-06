@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import theme from '../constants/theme';
+import GradientButton from '../components/common/GradientButton';
 
 const ProfileScreen = () => {
     const { user, logout, fetchUserProfile } = useAuth();
@@ -72,9 +73,11 @@ const ProfileScreen = () => {
             <View style={styles.loadingContainer}>
                 <Ionicons name="alert-circle-outline" size={50} color={theme.colors.error} />
                 <Text style={styles.errorText}>{error}</Text>
-                <TouchableOpacity style={styles.retryButton} onPress={fetchProfile}>
-                    <Text style={styles.retryText}>Retry</Text>
-                </TouchableOpacity>
+                <GradientButton
+                    title="Retry"
+                    onPress={fetchProfile}
+                    style={{ marginTop: theme.spacing.lg, paddingHorizontal: theme.spacing.xl, width: 150 }}
+                />
             </View>
         );
     }

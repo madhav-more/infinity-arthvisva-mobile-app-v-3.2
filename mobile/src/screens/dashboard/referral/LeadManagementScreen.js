@@ -22,6 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import theme from '../../../constants/theme';
 import LeadFormDataModal from './LeadFormDataModal';
 import LeadDocumentsModal from './LeadDocumentsModal';
+import GradientButton from '../../../components/common/GradientButton';
 
 const { width } = Dimensions.get('window');
 
@@ -373,10 +374,15 @@ export default function LeadManagementScreen({ navigation }) {
                                 <Ionicons name="chevron-down" size={14} color={theme.colors.text} />
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.addBtn} onPress={toggleAddMenu}>
-                                <Text style={styles.addBtnText}>Lead</Text>
-                                <Ionicons name="add" size={20} color="#FFF" />
-                            </TouchableOpacity>
+                            <View style={{ width: 90 }}>
+                                <GradientButton
+                                    onPress={toggleAddMenu}
+                                    title="Lead"
+                                    icon={<Ionicons name="add" size={18} color="#FFF" />}
+                                    style={{ height: 42, borderRadius: 12 }}
+                                    textStyle={{ fontSize: 12 }}
+                                />
+                            </View>
                         </View>
                     </View>
 

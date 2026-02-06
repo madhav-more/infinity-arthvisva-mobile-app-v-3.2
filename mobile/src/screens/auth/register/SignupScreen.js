@@ -15,6 +15,7 @@ import {
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../../context/AuthContext';
 import theme from '../../../constants/theme';
+import GradientButton from '../../../components/common/GradientButton';
 
 const SignupScreen = ({ navigation }) => {
     // Registration fields
@@ -155,7 +156,7 @@ const SignupScreen = ({ navigation }) => {
 
             try {
                 // STEP 1: Initial Registration
-                const result = await signup(name, email, mobile, password, rm_referral,state , city, confirmpass);
+                const result = await signup(name, email, mobile, password, rm_referral, state, city, confirmpass);
 
                 if (!result.success) {
                     setError(result.message);
@@ -509,23 +510,14 @@ const SignupScreen = ({ navigation }) => {
                     {step === 1 ? renderStep1() : renderStep2()}
 
                     {/* Action Button */}
-                    <TouchableOpacity
-                        style={[styles.button, loading && styles.buttonDisabled]}
+                    <GradientButton
                         onPress={handleSignup}
+                        title={step === 1 ? 'Sign Up' : 'Verify & Complete Registration'}
+                        loading={loading}
                         disabled={loading}
-                        activeOpacity={0.7}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color={theme.colors.white} />
-                        ) : (
-                            <>
-                                <Text style={styles.buttonText}>
-                                    {step === 1 ? 'Sign Up' : 'Verify & Complete Registration'}
-                                </Text>
-                                <Ionicons name="arrow-forward" size={20} color={theme.colors.white} style={styles.buttonIcon} />
-                            </>
-                        )}
-                    </TouchableOpacity>
+                        icon={<Ionicons name="arrow-forward" size={20} color={theme.colors.white} />}
+                        style={{ marginTop: theme.spacing.lg }}
+                    />
 
                     {/* Back Button for OTP Step */}
                     {step === 2 && (

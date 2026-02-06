@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { DashboardService } from '../../../services/dashboardService';
 import { productKeyMap, subProductOptions } from '../data/productData';
 import theme from '../../../constants/theme';
+import GradientButton from '../../../components/common/GradientButton';
 
 const SelectInput = ({ label, value, options, onSelect, error, placeholder = "Select" }) => {
     const [visible, setVisible] = useState(false);
@@ -255,17 +256,13 @@ export default function ReferralLeadModal({ visible, onClose, onSuccess }) {
                             <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
                                 <Text style={styles.cancelButtonText}>Cancel</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.submitButton, isSubmitting && styles.disabledButton]}
+                            <GradientButton
                                 onPress={handleSubmit}
+                                title="Save Lead"
+                                loading={isSubmitting}
                                 disabled={isSubmitting}
-                            >
-                                {isSubmitting ? (
-                                    <ActivityIndicator color={theme.colors.white} size="small" />
-                                ) : (
-                                    <Text style={styles.submitButtonText}>Save Lead</Text>
-                                )}
-                            </TouchableOpacity>
+                                style={{ flex: 2, paddingVertical: 0, height: 48, borderRadius: 12 }}
+                            />
                         </View>
                     </View>
                 </TouchableOpacity>

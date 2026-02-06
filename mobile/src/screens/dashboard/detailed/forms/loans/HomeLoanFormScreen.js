@@ -18,7 +18,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import theme from '../../../../../constants/theme';
 import { useNavigation } from '@react-navigation/native';
 import DatePickerInput from '../../../../../components/common/DatePickerInput';
-// import DatePickerInput from '../../../../../components/common/DatePickerInput';
+import GradientButton from '../../../../../components/common/GradientButton';
 
 const MAX_FILE_SIZE_BYTES = 200 * 1024; // 200KB
 
@@ -463,26 +463,14 @@ export default function HomeLoanFormScreen() {
             </ScrollView>
 
             <View style={styles.footer}>
-                <TouchableOpacity
-                    style={[styles.submitBtn, isSubmitting && styles.disabledBtn]}
+                <GradientButton
                     onPress={step === 1 ? handleCreateLead : handleFinalSubmission}
+                    title={step === 1 ? "Next Step" : "Submit Application"}
+                    loading={isSubmitting}
                     disabled={isSubmitting}
-                    activeOpacity={0.8}
-                >
-                    {isSubmitting ? (
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                            <ActivityIndicator color="#fff" />
-                            <Text style={styles.submitBtnText}>{statusMsg || "Processing..."}</Text>
-                        </View>
-                    ) : (
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                            <Text style={styles.submitBtnText}>
-                                {step === 1 ? "Next Step" : "Submit Application"}
-                            </Text>
-                            <Ionicons name="arrow-forward" size={18} color="#fff" />
-                        </View>
-                    )}
-                </TouchableOpacity>
+                    icon={<Ionicons name="arrow-forward" size={18} color="#fff" />}
+                    style={{ borderRadius: 10, paddingVertical: 16 }}
+                />
             </View>
         </SafeAreaView>
     );

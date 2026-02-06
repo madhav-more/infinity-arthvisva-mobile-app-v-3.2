@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { productCards } from '../data/productData';
 import theme from '../../../constants/theme';
 import { useNavigation } from '@react-navigation/native';
+import GradientButton from '../../../components/common/GradientButton';
 
 export default function AddDetailedLeadScreen() {
     const [activeTab, setActiveTab] = useState('loans');
@@ -65,10 +66,13 @@ export default function AddDetailedLeadScreen() {
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.actionButton} onPress={() => handleNavigation(item.title)}>
-                <Ionicons name="add-circle-outline" size={18} color="white" style={{ marginRight: 6 }} />
-                <Text style={styles.actionButtonText}>Click to Add New</Text>
-            </TouchableOpacity>
+            <GradientButton
+                onPress={() => handleNavigation(item.title)}
+                title="Click to Add New"
+                icon={<Ionicons name="add-circle-outline" size={18} color="white" />}
+                style={{ borderRadius: 8, height: 44, paddingVertical: 0 }}
+                textStyle={{ fontSize: 14, fontWeight: '700' }}
+            />
         </View>
     );
 

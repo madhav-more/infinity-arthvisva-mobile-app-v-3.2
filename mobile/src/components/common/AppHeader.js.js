@@ -52,16 +52,18 @@ export default AppHeader;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop:25,
-    height: 56,
+    paddingTop: 50, // Increased top padding for safe area
+    paddingBottom: 15,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.background,
+    borderBottomWidth: 1, // Optional: subtle separator
+    borderBottomColor: 'rgba(0,0,0,0.03)',
   },
   left: {
-    width: 50,
-    marginLeft:17,
-    alignItems: 'center',
+    width: 40,
+    alignItems: 'flex-start',
     justifyContent: 'center',
   },
   center: {
@@ -69,29 +71,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    height: 30,
-    width: 120,
+    height: 32, // Slightly larger logo
+    width: 140,
   },
   right: {
-    width: 50,
-    marginRight:17,
-    alignItems: 'center',
+    width: 40,
+    alignItems: 'flex-end',
     justifyContent: 'center',
   },
   badge: {
     position: 'absolute',
-    top: 4,
-    right: 10,
-    backgroundColor: '#E53935',
-    borderRadius: 8,
-    minWidth: 16,
-    height: 16,
+    top: -2,
+    right: -2,
+    backgroundColor: '#EF4444',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: theme.colors.background,
   },
   badgeText: {
     color: '#fff',
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
   },
 });

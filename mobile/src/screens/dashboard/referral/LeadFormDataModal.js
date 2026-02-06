@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import theme from '../../../constants/theme';
+import GradientButton from '../../../components/common/GradientButton';
 
 const KEY_LABELS = {
     clientName: "Client Name",
@@ -81,9 +82,12 @@ export default function LeadFormDataModal({ visible, onClose, lead }) {
                     </ScrollView>
 
                     <View style={styles.footer}>
-                        <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-                            <Text style={styles.closeBtnText}>CLOSE</Text>
-                        </TouchableOpacity>
+                        <GradientButton
+                            onPress={onClose}
+                            title="CLOSE"
+                            style={{ width: 100, height: 40, borderRadius: 8 }}
+                            textStyle={{ fontSize: 14 }}
+                        />
                     </View>
                 </View>
             </View>

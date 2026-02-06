@@ -15,6 +15,7 @@ import {
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import theme from '../../../constants/theme';
 import { useAuth } from '../../../context/AuthContext';
+import GradientButton from '../../../components/common/GradientButton';
 
 const { width } = Dimensions.get('window');
 
@@ -254,21 +255,14 @@ const LoginScreen = ({ navigation }) => {
                 </View>
             )}
 
-            <TouchableOpacity
-                style={[styles.button, loading && styles.buttonDisabled]}
+            <GradientButton
                 onPress={handleLogin}
+                title={!showOTPInput ? 'Get OTP' : 'Login'}
+                loading={loading}
                 disabled={loading}
-                activeOpacity={0.7}
-            >
-                {loading ? (
-                    <ActivityIndicator color={theme.colors.white} />
-                ) : (
-                    <>
-                        <Text style={styles.buttonText}>{!showOTPInput ? 'Get OTP' : 'Login'}</Text>
-                        <Ionicons name="arrow-forward" size={20} color={theme.colors.white} style={styles.buttonIcon} />
-                    </>
-                )}
-            </TouchableOpacity>
+                icon={<Ionicons name="arrow-forward" size={20} color={theme.colors.white} />}
+                style={{ marginTop: theme.spacing.md }}
+            />
         </View>
     );
 
@@ -316,18 +310,13 @@ const LoginScreen = ({ navigation }) => {
                 </View>
             </View>
 
-            <TouchableOpacity
-                style={[styles.button, loading && styles.buttonDisabled]}
+            <GradientButton
                 onPress={handleLogin}
+                title="Login"
+                loading={loading}
                 disabled={loading}
-                activeOpacity={0.7}
-            >
-                {loading ? (
-                    <ActivityIndicator color={theme.colors.white} />
-                ) : (
-                    <Text style={styles.buttonText}>Login</Text>
-                )}
-            </TouchableOpacity>
+                style={{ marginTop: theme.spacing.md }}
+            />
         </View>
     );
 

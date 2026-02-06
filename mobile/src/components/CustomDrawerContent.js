@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Platform, UIManager, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, Platform, UIManager, Dimensions } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import theme from '../constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Only enable LayoutAnimation on Android if not using New Architecture
 if (Platform.OS === 'android' &&
@@ -12,14 +14,23 @@ if (Platform.OS === 'android' &&
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
+const { width } = Dimensions.get('window');
+
 const CustomDrawerContent = (props) => {
-    const { user, logout } = useAuth();
+    const { user, logout, fetchUserProfile } = useAuth();
+    const insets = useSafeAreaInsets();
+
     // Default open sections: Dashboard and Products
     const [expandedSections, setExpandedSections] = useState({
         products: false,
         dashboard: true,
         secondary: false,
     });
+
+    // Fix: Fetch user profile on mount to ensure data is fresh and visible
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
 
     const toggleSection = (section) => {
         // Custom efficient animation config
@@ -32,23 +43,40 @@ const CustomDrawerContent = (props) => {
 
     const renderHeader = () => (
         <TouchableOpacity
-            style={styles.header}
             onPress={() => props.navigation.navigate('Profile')}
-            activeOpacity={0.8}
+            activeOpacity={0.9}
+            style={styles.headerContainer}
         >
-            <View style={styles.profileContainer}>
-                <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>{user?.role?.charAt(0)?.toUpperCase() || 'U'}</Text>
-                </View>
-                <View style={styles.userInfo}>
-                    <Text style={styles.userName} numberOfLines={1}>{user?.adv_id || 'User ID'}</Text>
-                    <Text style={styles.userRole}>{user?.role || 'Advisor'}</Text>
-                    <View style={styles.viewProfileBtn}>
-                        <Text style={styles.viewProfileText}>View Profile</Text>
-                        <Ionicons name="chevron-forward" size={12} color={theme.colors.brandBlue} />
+            <LinearGradient
+                colors={['#E0F2FE', '#FFFFFF']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.headerGradient, { paddingTop: insets.top + 20 }]}
+            >
+                <View style={styles.profileRow}>
+                    <View style={styles.avatarContainer}>
+                        <LinearGradient
+                            colors={theme.colors.buttonGradient}
+                            style={styles.avatarGradient}
+                        >
+                            <Text style={styles.avatarText}>{user?.role?.charAt(0)?.toUpperCase() || 'U'}</Text>
+                        </LinearGradient>
+                        <View style={styles.onlineBadge} />
                     </View>
+                    <View style={styles.userInfo}>
+                        <Text style={styles.userName} numberOfLines={1}>
+                            {user?.name || user?.adv_id || 'Welcome User'}
+                        </Text>
+                        <View style={styles.roleContainer}>
+                            <Text style={styles.userRole}>{user?.role || 'Advisor'}</Text>
+                            <View style={styles.verifiedBadge}>
+                                <Ionicons name="checkmark-circle" size={12} color={theme.colors.success} />
+                            </View>
+                        </View>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color={theme.colors.textSecondary} />
                 </View>
-            </View>
+            </LinearGradient>
         </TouchableOpacity>
     );
 
@@ -59,14 +87,14 @@ const CustomDrawerContent = (props) => {
             onPress={onPress}
             activeOpacity={0.7}
         >
-            <Ionicons
-                name={icon}
-                size={isSubItem ? 20 : 22}
-                color={isSubItem ? theme.colors.textSecondary : theme.colors.text}
-                style={{ width: 26 }} // Fixed width for alignment
-            />
+            <View style={[styles.menuIconBox, isSubItem && styles.subMenuIconBox]}>
+                <Ionicons
+                    name={icon}
+                    size={isSubItem ? 18 : 20}
+                    color={isSubItem ? theme.colors.textSecondary : theme.colors.brandBlue}
+                />
+            </View>
             <Text style={[styles.menuText, isSubItem && styles.subMenuText]}>{label}</Text>
-            {/* Optional chevron for main items if needed, but keeping clean for now */}
         </TouchableOpacity>
     );
 
@@ -77,36 +105,44 @@ const CustomDrawerContent = (props) => {
                 <TouchableOpacity
                     style={[styles.sectionHeader, isOpen && styles.sectionHeaderActive]}
                     onPress={() => toggleSection(sectionKey)}
-                    activeOpacity={0.7}
+                    activeOpacity={0.8}
                 >
                     <View style={styles.sectionTitleRow}>
-                        <View style={[styles.iconBox, isOpen && styles.iconBoxActive]}>
+                        <LinearGradient
+                            colors={isOpen ? theme.colors.buttonGradient : ['#F1F5F9', '#F8FAFC']}
+                            style={styles.iconBox}
+                        >
                             <Ionicons
                                 name={icon}
-                                size={20}
-                                color={isOpen ? theme.colors.white : theme.colors.brandBlue}
+                                size={18}
+                                color={isOpen ? theme.colors.white : theme.colors.textSecondary}
                             />
-                        </View>
+                        </LinearGradient>
                         <Text style={[styles.sectionTitle, isOpen && styles.sectionTitleActive]}>{title}</Text>
                     </View>
-                    <Ionicons
-                        name={isOpen ? "chevron-up" : "chevron-down"}
-                        size={18}
-                        color={isOpen ? theme.colors.brandBlue : theme.colors.textSecondary}
-                    />
+                    <View style={[styles.chevronBox, isOpen && styles.chevronBoxActive]}>
+                        <Ionicons
+                            name={isOpen ? "chevron-up" : "chevron-down"}
+                            size={16}
+                            color={isOpen ? theme.colors.brandBlue : theme.colors.textSecondary}
+                        />
+                    </View>
                 </TouchableOpacity>
 
                 {isOpen && (
                     <View style={styles.subItemsContainer}>
-                        {items.map((item, index) => (
-                            renderMenuItem(
-                                item.label,
-                                item.icon,
-                                () => props.navigation.navigate(item.screen),
-                                true,
-                                `${sectionKey}-${index}`
-                            )
-                        ))}
+                        <View style={styles.connectorLine} />
+                        <View style={styles.subItemsList}>
+                            {items.map((item, index) => (
+                                renderMenuItem(
+                                    item.label,
+                                    item.icon,
+                                    () => props.navigation.navigate(item.screen),
+                                    true,
+                                    `${sectionKey}-${index}`
+                                )
+                            ))}
+                        </View>
                     </View>
                 )}
             </View>
@@ -146,18 +182,17 @@ const CustomDrawerContent = (props) => {
                     {renderCollapsibleSection('Dashboard', 'apps-outline', 'dashboard', dashboardItems)}
                     {renderCollapsibleSection('Products', 'cube-outline', 'products', productsItems)}
                     {renderCollapsibleSection('Growth', 'rocket-outline', 'secondary', secondaryItems)}
-                    {/* Test section removed for production readiness */}
                 </View>
             </DrawerContentScrollView>
 
-            <View style={styles.footer}>
-                <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+            <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
+                <TouchableOpacity style={styles.logoutButton} onPress={logout} activeOpacity={0.8}>
                     <View style={styles.logoutIconBox}>
                         <Ionicons name="log-out-outline" size={20} color={theme.colors.error} />
                     </View>
-                    <Text style={styles.logoutText}>Sign Out</Text>
+                    <Text style={styles.logoutText}>Sign Out from App</Text>
                 </TouchableOpacity>
-                <Text style={styles.versionText}>v3.1.0</Text>
+                <Text style={styles.versionText}>v3.1.0 • Built for Excellence</Text>
             </View>
         </View>
     );
@@ -166,156 +201,197 @@ const CustomDrawerContent = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.colors.background,
+        backgroundColor: '#FFFFFF',
+    },
+    headerContainer: {
+        marginBottom: 10,
+    },
+    headerGradient: {
+        paddingHorizontal: 24,
+        paddingBottom: 24,
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+    },
+    profileRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
+    },
+    avatarContainer: {
+        position: 'relative',
+    },
+    avatarGradient: {
+        width: 56,
+        height: 56,
+        borderRadius: 20, // Squircle shape
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: theme.colors.brandBlue,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 8,
+    },
+    avatarText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#FFF',
+    },
+    onlineBadge: {
+        position: 'absolute',
+        bottom: -2,
+        right: -2,
+        width: 16,
+        height: 16,
+        backgroundColor: theme.colors.success,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: '#FFF',
+    },
+    userInfo: {
+        flex: 1,
+    },
+    userName: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: theme.colors.secondary,
+        marginBottom: 4,
+    },
+    roleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    userRole: {
+        fontSize: 13,
+        fontWeight: '500',
+        color: theme.colors.textSecondary,
+    },
+    verifiedBadge: {
+        marginLeft: 2,
     },
     drawerContent: {
         paddingTop: 10,
         paddingBottom: 20,
     },
-    header: {
-        paddingTop: Platform.OS === 'ios' ? 60 : 60,
-        paddingBottom: 24,
-        paddingHorizontal: 24,
-        backgroundColor: theme.colors.white,
-        borderBottomWidth: 1,
-        borderBottomColor: theme.colors.border,
-    },
-    profileContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    avatar: {
-        width: 52,
-        height: 52,
-        borderRadius: 16,
-        backgroundColor: theme.colors.brandBlue,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: theme.colors.brandBlue,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    avatarText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: theme.colors.white,
-    },
-    userInfo: {
-        marginLeft: 16,
-        flex: 1,
-    },
-    userName: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: theme.colors.text,
-        marginBottom: 2,
-    },
-    userRole: {
-        fontSize: 13,
-        color: theme.colors.textSecondary,
-        marginBottom: 4,
-    },
-    viewProfileBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    viewProfileText: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: theme.colors.brandBlue,
-        marginRight: 2,
-    },
     menuContainer: {
         paddingHorizontal: 16,
-        marginTop: 10,
+        gap: 16,
     },
     sectionContainer: {
-        marginBottom: 8,
-        backgroundColor: theme.colors.white,
-        borderRadius: 12,
-        overflow: 'hidden', // Clean corners when collapsed
+        backgroundColor: '#FFFFFF',
     },
     sectionHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 14,
-        paddingHorizontal: 16,
-        borderRadius: 12, // Active state background matches
+        paddingVertical: 12,
+        paddingHorizontal: 1,
+        marginBottom: 2,
     },
     sectionHeaderActive: {
-        backgroundColor: '#F1F5F9', // Very subtle active indicator
+        // We handle active styles in the children
     },
     sectionTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 14,
     },
     iconBox: {
-        width: 32,
-        height: 32,
-        borderRadius: 8,
-        backgroundColor: '#EFF6FF', // Light blue bg
+        width: 36,
+        height: 36,
+        borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    iconBoxActive: {
-        backgroundColor: theme.colors.brandBlue,
+    chevronBox: {
+        width: 28,
+        height: 28,
+        borderRadius: 8,
+        backgroundColor: '#F8FAFC',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    chevronBoxActive: {
+        backgroundColor: '#EFF6FF',
     },
     sectionTitle: {
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: '600',
-        color: theme.colors.text,
+        color: theme.colors.textSecondary,
     },
     sectionTitleActive: {
-        color: theme.colors.primary,
+        color: theme.colors.secondary,
         fontWeight: '700',
     },
     subItemsContainer: {
-        paddingTop: 4,
-        paddingBottom: 12,
+        flexDirection: 'row',
+        marginTop: 4,
+    },
+    connectorLine: {
+        width: 2,
+        backgroundColor: '#E2E8F0',
+        marginLeft: 18, // Align with center of parent icon
+        marginRight: 24,
+        borderRadius: 1,
+    },
+    subItemsList: {
+        flex: 1,
+        gap: 6,
+        paddingBottom: 8,
     },
     menuItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        backgroundColor: '#F8FAFC', // Subtle card for subitems
         gap: 12,
+        // Optional: Add shadow for floating feel
     },
     subMenuItem: {
-        paddingLeft: 20, // Indent sub-items
-        borderLeftWidth: 2,
-        borderLeftColor: 'transparent',
-        marginLeft: 26, // Align with parent text
+        // Specific styles for sub items if needed override
+    },
+    menuIconBox: {
+        // If we want icons with background
+    },
+    subMenuIconBox: {
+        width: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     menuText: {
-        fontSize: 15,
+        fontSize: 14,
+        fontWeight: '500',
+        color: theme.colors.textSecondary,
+    },
+    subMenuText: {
         color: theme.colors.text,
         fontWeight: '500',
     },
-    subMenuText: {
-        fontSize: 14,
-        color: theme.colors.textSecondary,
-    },
     footer: {
-        padding: 24,
+        paddingHorizontal: 24,
+        paddingTop: 24,
         borderTopWidth: 1,
-        borderTopColor: theme.colors.border,
-        backgroundColor: theme.colors.white,
+        borderTopColor: '#F1F5F9',
+        backgroundColor: '#FFFFFF',
     },
     logoutButton: {
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: '#FEF2F2',
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        borderRadius: 16,
         gap: 12,
         marginBottom: 16,
     },
     logoutIconBox: {
-        width: 36,
-        height: 36,
+        width: 32,
+        height: 32,
         borderRadius: 10,
-        backgroundColor: '#FEF2F2',
+        backgroundColor: '#FFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -326,9 +402,9 @@ const styles = StyleSheet.create({
     },
     versionText: {
         fontSize: 12,
-        color: theme.colors.textSecondary,
+        color: '#94A3B8',
         textAlign: 'center',
-        opacity: 0.5,
+        fontWeight: '500',
     },
 });
 
