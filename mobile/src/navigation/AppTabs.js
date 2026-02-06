@@ -61,29 +61,22 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                             style={styles.tabItem}
                             activeOpacity={0.8}
                         >
-                            <View style={styles.iconContainer}>
-                                {isFocused ? (
-                                    <LinearGradient
-                                        colors={theme.colors.buttonGradient}
-                                        start={{ x: 0, y: 0 }}
-                                        end={{ x: 1, y: 1 }}
-                                        style={styles.iconGradientMask}
-                                    >
-                                        <View style={styles.iconMaskInner}>
-                                            <Ionicons name={iconName} size={22} color="#FFF" />
-                                        </View>
-                                    </LinearGradient>
-                                ) : (
-                                    <Ionicons name={iconName} size={24} color={theme.colors.textSecondary} />
-                                )}
-                            </View>
-
-                            <Text style={[
-                                styles.label,
-                                isFocused ? styles.labelFocused : styles.labelInactive
-                            ]}>
-                                {label}
-                            </Text>
+                            {isFocused ? (
+                                <LinearGradient
+                                    colors={['#1CADA3', '#2076C7']}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    style={styles.activeTabGradient}
+                                >
+                                    <Ionicons name={iconName} size={20} color="#FFF" />
+                                    <Text style={styles.labelFocused}>{label}</Text>
+                                </LinearGradient>
+                            ) : (
+                                <View style={styles.inactiveTab}>
+                                    <Ionicons name={iconName} size={22} color={theme.colors.textSecondary} />
+                                    <Text style={styles.labelInactive}>{label}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                     );
                 })}
@@ -130,42 +123,37 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         paddingTop: 12,
+        paddingHorizontal: 12, // Add horizontal padding for pill spacing
     },
     tabItem: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        height: 60, // Fixed height for tap area consistency
+        height: 60,
     },
-    iconContainer: {
-        width: 40,
-        height: 40,
-        justifyContent: 'center',
+    activeTabGradient: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 4,
-    },
-    iconGradientMask: {
-        width: 38,
-        height: 38,
-        borderRadius: 12,
         justifyContent: 'center',
-        alignItems: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 24, // Pill shape
+        gap: 8,
+        minWidth: 100, // Minimum width for consistent feel
     },
-    iconMaskInner: {
-        width: '100%',
-        height: '100%',
+    inactiveTab: {
+        alignItems: 'center',
         justifyContent: 'center',
-        alignItems: 'center',
-    },
-    label: {
-        fontSize: 10,
-        fontWeight: '500',
+        gap: 4,
     },
     labelFocused: {
-        color: theme.colors.primary,
+        fontSize: 12,
         fontWeight: '700',
+        color: '#FFFFFF',
     },
     labelInactive: {
+        fontSize: 10,
+        fontWeight: '500',
         color: theme.colors.textSecondary,
     },
 });
