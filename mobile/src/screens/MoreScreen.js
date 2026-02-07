@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -7,294 +7,225 @@ import {
     Image,
     ScrollView,
     SafeAreaView,
-    StatusBar
+    StatusBar,
+    TextInput,
+    Platform
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import theme from '../constants/theme';
+import GradientButton from '../components/common/GradientButton';
 
 const MoreScreen = () => {
     const { user, logout } = useAuth();
-
-    const sections = [
-        {
-            title: 'Account & Security',
-            items: [
-                { id: 'profile', label: 'Edit Profile', icon: 'person-outline', color: '#3B82F6' },
-                { id: 'password', label: 'Change Password', icon: 'lock-closed-outline', color: '#6366F1' },
-                { id: 'notif', label: 'Notifications', icon: 'notifications-outline', color: '#F59E0B' },
-            ]
-        },
-        {
-            title: 'Partner Program',
-            items: [
-                { id: 'earnings', label: 'My Earnings', icon: 'wallet-outline', color: '#10B981' },
-                { id: 'refer', label: 'Refer a Friend', icon: 'share-social-outline', color: '#EC4899' },
-                { id: 'leads', label: 'Lead Performance', icon: 'trending-up-outline', color: '#8B5CF6' },
-            ]
-        },
-        {
-            title: 'Support & Legal',
-            items: [
-                { id: 'help', label: 'Help Center', icon: 'help-circle-outline', color: '#64748B' },
-                { id: 'terms', label: 'Terms of Service', icon: 'document-text-outline', color: '#64748B' },
-                { id: 'privacy', label: 'Privacy Policy', icon: 'shield-checkmark-outline', color: '#64748B' },
-            ]
-        }
-    ];
+    const [msgForm, setMsgForm] = useState({ name: '', phone: '', message: '' });
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
-                {/* 👤 PROFILE HEADER */}
-                <View style={styles.profileHeader}>
-                    <View style={styles.avatarContainer}>
+                {/* 👤 PROFILE HEADER (PREMIUM) */}
+                <View style={styles.profileCard}>
+                    <View style={styles.profileRow}>
                         <Image
-                            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}
+                            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
                             style={styles.avatar}
                         />
-                        <TouchableOpacity style={styles.editAvatarBtn}>
-                            <Ionicons name="camera" size={16} color="#FFF" />
+                        <View style={styles.profileInfo}>
+                            <Text style={styles.userName}>{user?.name || 'Madhav More'}</Text>
+                            <Text style={styles.userEmail}>{user?.email || 'madhav@infinity.com'}</Text>
+                            <View style={styles.premiumBadge}>
+                                <Ionicons name="star" size={10} color="#B45309" />
+                                <Text style={styles.premiumText}>Premium Partner</Text>
+                            </View>
+                        </View>
+                        <TouchableOpacity style={styles.editBtn}>
+                            <Ionicons name="create-outline" size={20} color="#475569" />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.userName}>{user?.name || 'Madhav More'}</Text>
-                    <Text style={styles.userEmail}>{user?.email || 'madhav@example.com'}</Text>
-
-                    <View style={styles.badge}>
-                        <Ionicons name="star" size={12} color={theme.colors.accent} />
-                        <Text style={styles.badgeText}>Premium Partner</Text>
-                    </View>
                 </View>
 
-                {/* 📊 QUICK STATS */}
-                <View style={styles.statsRow}>
-                    <View style={styles.statItem}>
-                        <Text style={styles.statVal}>128</Text>
-                        <Text style={styles.statLabel}>Total Leads</Text>
-                    </View>
-                    <View style={[styles.statItem, styles.statBorder]}>
-                        <Text style={styles.statVal}>₹45k</Text>
-                        <Text style={styles.statLabel}>Earnings</Text>
-                    </View>
-                    <View style={styles.statItem}>
-                        <Text style={styles.statVal}>4.8</Text>
-                        <Text style={styles.statLabel}>Rating</Text>
-                    </View>
+                {/* 🤝 PARTNER SECTION */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Partner Program</Text>
+                    <TouchableOpacity style={styles.partnerCard}>
+                        <View style={styles.partnerContent}>
+                            <Text style={styles.partnerHead}>Become Our Partner</Text>
+                            <Text style={styles.partnerSub}>Join 2700+ active partners. Unlock exclusive tools & rewards.</Text>
+                            <Text style={styles.joinLink}>Join Now →</Text>
+                        </View>
+                        <Image
+                            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/1256/1256650.png' }}
+                            style={styles.partnerImg}
+                        />
+                    </TouchableOpacity>
                 </View>
 
-                {/* ⚙️ SETTINGS SECTIONS */}
-                {sections.map((section, sIdx) => (
-                    <View key={sIdx} style={styles.section}>
-                        <Text style={styles.sectionTitle}>{section.title}</Text>
-                        <View style={styles.sectionCard}>
-                            {section.items.map((item, iIdx) => (
-                                <TouchableOpacity
-                                    key={iIdx}
-                                    style={[styles.item, iIdx !== section.items.length - 1 && styles.itemBorder]}
-                                >
-                                    <View style={[styles.iconBox, { backgroundColor: item.color + '15' }]}>
-                                        <Ionicons name={item.icon} size={20} color={item.color} />
-                                    </View>
-                                    <Text style={styles.itemLabel}>{item.label}</Text>
-                                    <Ionicons name="chevron-forward" size={18} color="#CBD5E1" />
-                                </TouchableOpacity>
-                            ))}
+                {/* 📞 CONTACT SUPPORT */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Get In Touch</Text>
+
+                    {/* Contact Stats */}
+                    <View style={styles.contactRow}>
+                        <View style={styles.contactItem}>
+                            <View style={[styles.contactIcon, { backgroundColor: '#EFF6FF' }]}>
+                                <Ionicons name="call" size={20} color="#2563EB" />
+                            </View>
+                            <Text style={styles.contactLabel}>1800-532-7600</Text>
+                        </View>
+                        <View style={styles.contactItem}>
+                            <View style={[styles.contactIcon, { backgroundColor: '#F0FDF4' }]}>
+                                <Ionicons name="mail" size={20} color="#10B981" />
+                            </View>
+                            <Text style={styles.contactLabel}>info@infinity.com</Text>
                         </View>
                     </View>
-                ))}
+
+                    {/* Quick Message Form */}
+                    <View style={styles.messageCard}>
+                        <Text style={styles.msgHead}>Send us a Message</Text>
+                        <TextInput
+                            placeholder="Your Name"
+                            style={styles.input}
+                            placeholderTextColor="#94A3B8"
+                        />
+                        <TextInput
+                            placeholder="Phone Number"
+                            style={styles.input}
+                            placeholderTextColor="#94A3B8"
+                            keyboardType="phone-pad"
+                        />
+                        <TextInput
+                            placeholder="How can we help?"
+                            style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
+                            placeholderTextColor="#94A3B8"
+                            multiline
+                        />
+                        <GradientButton
+                            title="Send Message"
+                            style={{ borderRadius: 12, marginTop: 8 }}
+                            onPress={() => { }}
+                        />
+                    </View>
+                </View>
+
+                {/* ⚙️ SETTINGS LIST */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Settings</Text>
+                    <View style={styles.settingsList}>
+                        <SettingItem icon="lock-closed-outline" label="Change Password" color="#6366F1" />
+                        <SettingItem icon="document-text-outline" label="Terms of Service" color="#64748B" />
+                        <SettingItem icon="shield-checkmark-outline" label="Privacy Policy" color="#64748B" />
+                    </View>
+                </View>
 
                 {/* 🚪 LOGOUT */}
                 <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-                    <Ionicons name="log-out" size={20} color={theme.colors.error} />
                     <Text style={styles.logoutText}>Sign Out</Text>
                 </TouchableOpacity>
 
-                <View style={styles.versionContainer}>
-                    <Text style={styles.versionText}>Version 3.1.2 (Build 42)</Text>
-                    <Text style={styles.copyright}>© 2026 Infinity Arthvishva</Text>
+                {/* FOOTER */}
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>Infinity Arthvishva v3.1</Text>
+                    <Text style={styles.footerText}>CIN: U66190PN2025PTC238981</Text>
                 </View>
 
-                <View style={{ height: 40 }} />
             </ScrollView>
         </SafeAreaView>
     );
 };
 
+const SettingItem = ({ icon, label, color }) => (
+    <TouchableOpacity style={styles.settingItem}>
+        <View style={[styles.settingIconBox, { backgroundColor: color + '15' }]}>
+            <Ionicons name={icon} size={18} color={color} />
+        </View>
+        <Text style={styles.settingLabel}>{label}</Text>
+        <Ionicons name="chevron-forward" size={16} color="#CBD5E1" />
+    </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    container: { flex: 1, backgroundColor: '#F8FAFC' },
+
+    profileCard: {
+        margin: 20,
+        backgroundColor: '#FFF',
+        borderRadius: 24,
+        padding: 20,
+        ...theme.shadow,
+        marginTop: Platform.OS === 'android' ? 40 : 20,
+    },
+    profileRow: { flexDirection: 'row', alignItems: 'center' },
+    avatar: { width: 64, height: 64, borderRadius: 32, marginRight: 16 },
+    profileInfo: { flex: 1 },
+    userName: { fontSize: 20, fontWeight: '800', color: '#1E293B' },
+    userEmail: { fontSize: 13, color: '#64748B', marginBottom: 8 },
+    premiumBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEF3C7', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 100, alignSelf: 'flex-start', gap: 4 },
+    premiumText: { fontSize: 10, fontWeight: '700', color: '#B45309' },
+    editBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' },
+
+    section: { marginBottom: 24, paddingHorizontal: 20 },
+    sectionTitle: { fontSize: 13, fontWeight: '700', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 },
+
+    partnerCard: {
+        backgroundColor: '#1E293B',
+        borderRadius: 20,
+        padding: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingRight: 10,
+    },
+    partnerContent: { flex: 1 },
+    partnerHead: { fontSize: 18, fontWeight: '700', color: '#FFF', marginBottom: 6 },
+    partnerSub: { fontSize: 12, color: '#94A3B8', lineHeight: 18, marginBottom: 12, maxWidth: '90%' },
+    joinLink: { fontSize: 13, fontWeight: '700', color: theme.colors.brandBlue },
+    partnerImg: { width: 80, height: 80, opacity: 0.9 },
+
+    contactRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
+    contactItem: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 12, borderRadius: 16, borderWidth: 1, borderColor: '#F1F5F9', gap: 10 },
+    contactIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+    contactLabel: { fontSize: 12, fontWeight: '600', color: '#334155' },
+
+    messageCard: {
+        backgroundColor: '#FFF',
+        borderRadius: 20,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
+        ...theme.shadow,
+    },
+    msgHead: { fontSize: 16, fontWeight: '700', color: '#1E293B', marginBottom: 16 },
+    input: {
         backgroundColor: '#F8FAFC',
-    },
-    profileHeader: {
-        alignItems: 'center',
-        paddingVertical: 32,
-        backgroundColor: '#FFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#F1F5F9',
-    },
-    avatarContainer: {
-        position: 'relative',
-        marginBottom: 16,
-    },
-    avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 4,
-        borderColor: '#F8FAFC',
-    },
-    editAvatarBtn: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: theme.colors.primary,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 3,
-        borderColor: '#FFF',
-    },
-    userName: {
-        fontSize: 22,
-        fontWeight: '800',
-        color: '#1E293B',
-    },
-    userEmail: {
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         fontSize: 14,
-        color: '#64748B',
-        marginTop: 4,
-    },
-    badge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        backgroundColor: '#FFF7ED',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 12,
-        marginTop: 12,
-        borderWidth: 1,
-        borderColor: '#FFEDD5',
-    },
-    badgeText: {
-        fontSize: 12,
-        fontWeight: '700',
-        color: '#9A3412',
-    },
-
-    statsRow: {
-        flexDirection: 'row',
-        backgroundColor: '#FFF',
-        marginTop: 12,
-        paddingVertical: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F1F5F9',
-    },
-    statItem: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    statBorder: {
-        borderLeftWidth: 1,
-        borderRightWidth: 1,
-        borderColor: '#F1F5F9',
-    },
-    statVal: {
-        fontSize: 18,
-        fontWeight: '800',
-        color: '#1E293B',
-    },
-    statLabel: {
-        fontSize: 12,
-        color: '#64748B',
-        marginTop: 4,
-        fontWeight: '500',
-    },
-
-    section: {
-        marginTop: 24,
-        paddingHorizontal: 20,
-    },
-    sectionTitle: {
-        fontSize: 13,
-        fontWeight: '800',
-        color: '#94A3B8',
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-        marginBottom: 12,
-        marginLeft: 4,
-    },
-    sectionCard: {
-        backgroundColor: '#FFF',
-        borderRadius: 20,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#F1F5F9',
-        ...theme.shadow,
-    },
-    item: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-    },
-    itemBorder: {
-        borderBottomWidth: 1,
-        borderBottomColor: '#F8FAFC',
-    },
-    iconBox: {
-        width: 40,
-        height: 40,
-        borderRadius: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 16,
-    },
-    itemLabel: {
-        flex: 1,
-        fontSize: 15,
-        fontWeight: '600',
         color: '#334155',
+        marginBottom: 12,
     },
 
-    logoutBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+    settingsList: {
         backgroundColor: '#FFF',
-        marginHorizontal: 20,
-        marginTop: 32,
-        paddingVertical: 16,
         borderRadius: 20,
-        gap: 12,
+        padding: 8,
         borderWidth: 1,
-        borderColor: '#FEE2E2',
+        borderColor: '#F1F5F9',
         ...theme.shadow,
     },
-    logoutText: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: theme.colors.error,
-    },
+    settingItem: { flexDirection: 'row', alignItems: 'center', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' },
+    settingIconBox: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+    settingLabel: { flex: 1, fontSize: 14, fontWeight: '600', color: '#334155' },
 
-    versionContainer: {
-        alignItems: 'center',
-        marginTop: 32,
-        paddingHorizontal: 20,
-    },
-    versionText: {
-        fontSize: 12,
-        color: '#94A3B8',
-        fontWeight: '500',
-    },
-    copyright: {
-        fontSize: 11,
-        color: '#CBD5E1',
-        marginTop: 4,
-    }
+    logoutBtn: { marginHorizontal: 20, paddingVertical: 16, borderRadius: 16, alignItems: 'center', borderWidth: 1, borderColor: '#FEE2E2', backgroundColor: '#FFF' },
+    logoutText: { color: theme.colors.error, fontWeight: '700', fontSize: 14 },
+
+    footer: { alignItems: 'center', marginTop: 32, marginBottom: 20 },
+    footerText: { fontSize: 11, color: '#94A3B8', marginBottom: 4 }
 });
 
 export default MoreScreen;

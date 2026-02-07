@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Keyboard, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import theme from '../../../../constants/theme';
 import { categories } from '../data/categories';
 
@@ -11,6 +12,7 @@ const FilterSelect = ({ label, value, options, onSelect }) => {
         <View style={styles.filterGroup}>
             <Text style={styles.label}>{label}</Text>
             <TouchableOpacity
+                activeOpacity={0.7}
                 style={[styles.selectBox, visible && styles.activeSelectBox]}
                 onPress={() => {
                     Keyboard.dismiss();
@@ -23,7 +25,7 @@ const FilterSelect = ({ label, value, options, onSelect }) => {
                 <Ionicons name="chevron-down" size={18} color={theme.colors.textSecondary} />
             </TouchableOpacity>
 
-            <Modal visible={visible} transparent animationType="slide">
+            <Modal visible={visible} transparent animationType="fade">
                 <TouchableOpacity
                     style={styles.modalOverlay}
                     activeOpacity={1}
@@ -31,12 +33,15 @@ const FilterSelect = ({ label, value, options, onSelect }) => {
                 >
                     <View style={styles.pickerContainer}>
                         <View style={styles.pickerHeader}>
-                            <Text style={styles.pickerTitle}>Select {label}</Text>
-                            <TouchableOpacity onPress={() => setVisible(false)}>
+                            <View>
+                                <Text style={styles.pickerTitle}>Select {label}</Text>
+                                <Text style={styles.pickerSubtitle}>Refine your portfolio view</Text>
+                            </View>
+                            <TouchableOpacity style={styles.closeIcon} onPress={() => setVisible(false)}>
                                 <Ionicons name="close" size={24} color={theme.colors.text} />
                             </TouchableOpacity>
                         </View>
-                        <ScrollView>
+                        <ScrollView style={styles.optionsList}>
                             {options.map((opt) => (
                                 <TouchableOpacity
                                     key={opt}
@@ -56,17 +61,16 @@ const FilterSelect = ({ label, value, options, onSelect }) => {
                                         {opt}
                                     </Text>
                                     {value === opt && (
-                                        <Ionicons name="checkmark" size={20} color={theme.colors.brandBlue} />
+                                        <LinearGradient
+                                            colors={['#1CADA3', '#2076C7']}
+                                            style={styles.checkCircle}
+                                        >
+                                            <Ionicons name="checkmark" size={14} color="#FFF" />
+                                        </LinearGradient>
                                     )}
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
-                        <TouchableOpacity
-                            style={styles.closeBtn}
-                            onPress={() => setVisible(false)}
-                        >
-                            <Text style={styles.closeBtnText}>Close</Text>
-                        </TouchableOpacity>
                     </View>
                 </TouchableOpacity>
             </Modal>
@@ -87,13 +91,13 @@ const PortfolioFilters = ({
         <View style={styles.container}>
             <View style={styles.row}>
                 <FilterSelect
-                    label="Category"
+                    label="CATEGORY"
                     value={selectedCategory}
                     options={categoryList}
                     onSelect={setSelectedCategory}
                 />
                 <FilterSelect
-                    label="Product"
+                    label="PRODUCT"
                     value={selectedProduct}
                     options={productList}
                     onSelect={setSelectedProduct}
@@ -105,19 +109,20 @@ const PortfolioFilters = ({
 
 const styles = StyleSheet.create({
     container: {
+        paddingHorizontal: 24,
         marginBottom: 24,
     },
     row: {
         flexDirection: 'row',
-        gap: 16,
+        gap: 12,
     },
     filterGroup: {
         flex: 1,
     },
     label: {
-        ...theme.typography.label,
-        fontSize: 11,
-        color: theme.colors.textSecondary,
+        fontSize: 10,
+        fontWeight: '800',
+        color: '#94A3B8',
         marginBottom: 8,
         letterSpacing: 1,
     },
@@ -126,33 +131,34 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         borderWidth: 1.5,
-        borderColor: theme.colors.border,
-        borderRadius: 12,
+        borderColor: '#E2E8F0',
+        borderRadius: 16,
         paddingHorizontal: 16,
         height: 52,
-        backgroundColor: theme.colors.white,
+        backgroundColor: '#FFF',
+        ...theme.shadow,
     },
     activeSelectBox: {
-        borderColor: theme.colors.brandBlue,
+        borderColor: '#2076C7',
         backgroundColor: '#F8FAFF',
     },
     selectText: {
-        fontSize: 15,
-        color: theme.colors.text,
-        fontWeight: '600',
+        fontSize: 14,
+        color: '#1E293B',
+        fontWeight: '700',
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(15, 23, 42, 0.6)', // Deep slate overlay
-        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(15, 23, 42, 0.4)',
+        justifyContent: 'center',
+        padding: 24,
     },
     pickerContainer: {
-        backgroundColor: theme.colors.white,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        backgroundColor: '#FFF',
+        borderRadius: 24,
         maxHeight: '70%',
-        paddingBottom: Platform.OS === 'ios' ? 40 : 20,
         ...theme.shadow,
+        overflow: 'hidden',
     },
     pickerHeader: {
         flexDirection: 'row',
@@ -163,41 +169,54 @@ const styles = StyleSheet.create({
         borderBottomColor: '#F1F5F9',
     },
     pickerTitle: {
-        ...theme.typography.h3,
-        color: theme.colors.text,
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1E293B',
+    },
+    pickerSubtitle: {
+        fontSize: 12,
+        color: '#64748B',
+        marginTop: 2,
+        fontWeight: '500',
+    },
+    closeIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        backgroundColor: '#F8FAFC',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    optionsList: {
+        padding: 12,
     },
     pickerOption: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 20,
-        paddingHorizontal: 24,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F8FAFC',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 4,
     },
     selectedOption: {
-        backgroundColor: '#EFF6FF',
+        backgroundColor: '#F0F9FF',
     },
     pickerOptionText: {
-        fontSize: 16,
-        color: theme.colors.text,
-        fontWeight: '500',
+        fontSize: 15,
+        color: '#475569',
+        fontWeight: '600',
     },
     selectedOptionText: {
-        color: theme.colors.brandBlue,
+        color: '#2076C7',
         fontWeight: '700',
     },
-    closeBtn: {
-        padding: 18,
+    checkCircle: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F8FAFC',
-        marginTop: 8,
     },
-    closeBtnText: {
-        ...theme.typography.label,
-        color: theme.colors.textSecondary,
-        fontSize: 13,
-    }
 });
 
 export default PortfolioFilters;

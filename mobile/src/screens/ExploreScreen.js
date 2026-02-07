@@ -4,165 +4,203 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    TextInput,
     Image,
     TouchableOpacity,
-    Dimensions
+    Dimensions,
+    SafeAreaView,
+    StatusBar,
+    Platform
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import theme from '../constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
 const ExploreScreen = () => {
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            {/* 🔍 SEARCH HEADER */}
-            <View style={styles.header}>
-                <Text style={styles.title}>Explore</Text>
-                <Text style={styles.subtitle}>Discover services & financial tools</Text>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
-                <View style={styles.searchBar}>
-                    <Ionicons name="search" size={20} color={theme.colors.textSecondary} />
-                    <TextInput
-                        placeholder="Search for loans, insurance..."
-                        style={styles.searchInput}
-                        placeholderTextColor={theme.colors.textSecondary}
-                    />
+                {/* 🏢 HERO HEADER */}
+                <View style={styles.header}>
+                    <Text style={styles.headerEyebrow}>WHO WE ARE</Text>
+                    <Text style={styles.headerTitle}>Infinity Arthvishva</Text>
+                    <Text style={styles.headerDesc}>
+                        Empowering 2700+ partners and families across India with advanced financial intelligence.
+                    </Text>
+
+                    <View style={styles.visionCard}>
+                        <View style={styles.visionIconBox}>
+                            <Ionicons name="eye-outline" size={24} color="#FFF" />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.visionTitle}>Our Vision</Text>
+                            <Text style={styles.visionText}>To seamlessly integrate advanced financial intelligence into everyday life for long-term prosperity.</Text>
+                        </View>
+                    </View>
                 </View>
-            </View>
 
-            {/* 🔥 TRENDING TOPICS */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Trending Financial Topics</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.trendingScroll}>
-                    {trending.map((item, idx) => (
-                        <TouchableOpacity key={idx} style={styles.trendingCard}>
-                            <Image source={{ uri: item.image }} style={styles.trendingImg} />
-                            <View style={styles.trendingInfo}>
-                                <Text style={styles.trendingTitle}>{item.title}</Text>
-                                <View style={styles.trendingMeta}>
-                                    <Ionicons name="time-outline" size={12} color="#94A3B8" />
-                                    <Text style={styles.trendingTime}>{item.time}</Text>
+                {/* 🏭 GROUP OF COMPANIES */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Group of Companies</Text>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.companyScroll}>
+                        {companies.map((comp, idx) => (
+                            <View key={idx} style={styles.companyCard}>
+                                <View style={[styles.companyIcon, { backgroundColor: comp.color + '15' }]}>
+                                    <MaterialCommunityIcons name={comp.icon} size={28} color={comp.color} />
                                 </View>
+                                <Text style={styles.companyName}>{comp.name}</Text>
+                                <View style={styles.metaBox}>
+                                    <Text style={styles.metaLabel}>CIN</Text>
+                                    <Text style={styles.metaValue}>{comp.cin}</Text>
+                                </View>
+                                {comp.gst && (
+                                    <View style={styles.metaBox}>
+                                        <Text style={styles.metaLabel}>GST</Text>
+                                        <Text style={styles.metaValue}>{comp.gst}</Text>
+                                    </View>
+                                )}
                             </View>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-            </View>
+                        ))}
+                    </ScrollView>
+                </View>
 
-            {/* 🧮 FINANCIAL TOOLS */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Smart Calculators</Text>
-                <View style={styles.toolsGrid}>
-                    {tools.map((item, idx) => (
-                        <TouchableOpacity key={idx} style={styles.toolItem}>
-                            <View style={[styles.toolIcon, { backgroundColor: item.bg }]}>
-                                <Ionicons name={item.icon} size={24} color={item.color} />
+                {/* 📍 BRANCH LOCATOR */}
+                <View style={styles.section}>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>Our Presence</Text>
+                        <Text style={styles.sectionSubtitle}>20+ Locations</Text>
+                    </View>
+
+                    <View style={styles.branchContainer}>
+                        {branches.map((branch, idx) => (
+                            <View key={idx} style={styles.branchCard}>
+                                <View style={styles.branchHeader}>
+                                    <View style={styles.branchIcon}>
+                                        <Ionicons name="location" size={18} color="#2563EB" />
+                                    </View>
+                                    <Text style={styles.branchName}>{branch.city} Branch</Text>
+                                </View>
+                                <Text style={styles.branchAddress}>{branch.address}</Text>
+                                <TouchableOpacity style={styles.directionBtn}>
+                                    <Text style={styles.directionText}>Get Directions</Text>
+                                    <Ionicons name="navigate-circle-outline" size={16} color="#2563EB" />
+                                </TouchableOpacity>
                             </View>
-                            <Text style={styles.toolLabel}>{item.label}</Text>
-                        </TouchableOpacity>
-                    ))}
+                        ))}
+                    </View>
                 </View>
-            </View>
 
-            {/* 🎁 PROMO BANNER */}
-            <View style={styles.promoBanner}>
-                <View style={styles.promoText}>
-                    <Text style={styles.promoTitle}>Exclusive Partner Program</Text>
-                    <Text style={styles.promoDesc}>Refer detailed leads and earn up to 1.5% commission.</Text>
-                    <TouchableOpacity style={styles.promoBtn}>
-                        <Text style={styles.promoBtnText}>View Details</Text>
-                    </TouchableOpacity>
-                </View>
-                <Ionicons name="gift" size={60} color="rgba(255,255,255,0.2)" style={styles.promoIcon} />
-            </View>
-
-            <View style={{ height: 40 }} />
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
-const trending = [
-    { title: 'Tax Saving Tips 2026', time: '5 min read', image: 'https://images.unsplash.com/photo-1554224155-1696413565d3?w=500&auto=format&fit=crop&q=60' },
-    { title: 'Choosing the Right Mutual Fund', time: '8 min read', image: 'https://images.unsplash.com/photo-1611974717482-aa8a6a284aa2?w=500&auto=format&fit=crop&q=60' },
-    { title: 'Understanding SIP Benefits', time: '4 min read', image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=500&auto=format&fit=crop&q=60' }
+const companies = [
+    {
+        name: 'Advisory Pvt Ltd',
+        cin: 'U66190PN2025PTC238981',
+        gst: '27AAICI0723K1ZJ',
+        icon: 'briefcase-account',
+        color: '#2563EB'
+    },
+    {
+        name: 'Insurance Broker',
+        cin: 'U65110PN2025PTC241213',
+        gst: 'Under Process',
+        icon: 'shield-check',
+        color: '#0D9488'
+    },
+    {
+        name: 'Mutual Fund LLP',
+        cin: 'LLPIN: ACP-0126',
+        gst: '27AALFI4941B1ZH',
+        icon: 'finance',
+        color: '#7C3AED'
+    }
 ];
 
-const tools = [
-    { label: 'EMI Calc', icon: 'calculator', color: '#3B82F6', bg: '#EFF6FF' },
-    { label: 'SIP Plan', icon: 'trending-up', color: '#10B981', bg: '#F0FDF4' },
-    { label: 'Tax Tool', icon: 'receipt', color: '#F59E0B', bg: '#FFFBEB' },
-    { label: 'PPF Calc', icon: 'wallet', color: '#8B5CF6', bg: '#F5F3FF' }
+const branches = [
+    { city: 'Pune (Main)', address: '1001 & 1201, 7 Business Square, Ganeshkhind Road, Shivajinagar, Pune 411016' },
+    { city: 'Kanpur', address: 'Office 01, Kamlist Tower, Behind Mishra Jewellers, Nehru Nagar, Kanpur 209861' },
+    { city: 'Nagpur', address: 'Apt 202, Sharda Enclave, Beside Platina Heart Institute, Sitabuldi, Nagpur 440012' },
+    { city: 'Kolkata', address: 'PS Qube, Room 620, Plot IID/31/1, New Town, Kolkata 700135' },
+    { city: 'Nashik', address: 'Office 2064, Roongta Shopping Hub, Mumbai-Agra Road, Nashik 422009' }
 ];
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F8FAFC' },
-    header: { padding: 20, paddingTop: 40 },
-    title: { fontSize: 28, fontWeight: '800', color: '#1E293B' },
-    subtitle: { fontSize: 16, color: '#64748B', marginTop: 4, marginBottom: 20 },
-    searchBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
+
+    header: {
         backgroundColor: '#FFF',
-        height: 52,
-        borderRadius: 16,
-        paddingHorizontal: 16,
-        ...theme.shadow,
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
+        paddingHorizontal: 20,
+        paddingTop: Platform.OS === 'android' ? 40 : 20,
+        paddingBottom: 32,
+        borderBottomRightRadius: 32,
+        borderBottomLeftRadius: 32,
+        shadowColor: '#64748B',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.05,
+        shadowRadius: 20,
+        elevation: 5,
+        zIndex: 10,
     },
-    searchInput: { flex: 1, marginLeft: 12, fontSize: 15, color: '#1E293B' },
+    headerEyebrow: { fontSize: 11, fontWeight: '800', color: theme.colors.brandBlue, letterSpacing: 1.5, marginBottom: 8 },
+    headerTitle: { fontSize: 28, fontWeight: '800', color: '#1E293B', marginBottom: 12 },
+    headerDesc: { fontSize: 15, color: '#64748B', lineHeight: 22, marginBottom: 24, maxWidth: '90%' },
 
-    section: { marginTop: 28 },
+    visionCard: {
+        backgroundColor: '#1E293B',
+        borderRadius: 20,
+        padding: 20,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: 16,
+    },
+    visionIconBox: { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
+    visionTitle: { fontSize: 16, fontWeight: '700', color: '#FFF', marginBottom: 4 },
+    visionText: { fontSize: 13, color: '#94A3B8', lineHeight: 18 },
+
+    section: { marginTop: 32 },
     sectionTitle: { fontSize: 18, fontWeight: '800', color: '#1E293B', paddingHorizontal: 20, marginBottom: 16 },
+    sectionSubtitle: { fontSize: 13, color: '#64748B', fontWeight: '500' },
+    sectionHeader: { paddingHorizontal: 20, marginBottom: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
 
-    trendingScroll: { paddingLeft: 20 },
-    trendingCard: {
-        width: width * 0.45,
+    companyScroll: { paddingHorizontal: 20 },
+    companyCard: {
+        width: width * 0.7,
         backgroundColor: '#FFF',
         borderRadius: 20,
+        padding: 20,
         marginRight: 16,
-        overflow: 'hidden',
         borderWidth: 1,
         borderColor: '#E2E8F0',
         ...theme.shadow,
     },
-    trendingImg: { width: '100%', height: 110 },
-    trendingInfo: { padding: 12 },
-    trendingTitle: { fontSize: 14, fontWeight: '700', color: '#1E293B', height: 40 },
-    trendingMeta: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 4 },
-    trendingTime: { fontSize: 11, color: '#94A3B8', fontWeight: '500' },
+    companyIcon: { width: 56, height: 56, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
+    companyName: { fontSize: 16, fontWeight: '700', color: '#1E293B', marginBottom: 16 },
+    metaBox: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, borderBottomWidth: 1, borderBottomColor: '#F1F5F9', paddingBottom: 8 },
+    metaLabel: { fontSize: 12, color: '#94A3B8', fontWeight: '500' },
+    metaValue: { fontSize: 12, color: '#334155', fontWeight: '600' },
 
-    toolsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 12 },
-    toolItem: {
-        width: (width - 44) / 2,
+    branchContainer: { paddingHorizontal: 20, gap: 16 },
+    branchCard: {
         backgroundColor: '#FFF',
-        borderRadius: 18,
+        borderRadius: 16,
         padding: 16,
-        alignItems: 'center',
         borderWidth: 1,
         borderColor: '#F1F5F9',
-        ...theme.shadow,
+        ...theme.shadow
     },
-    toolIcon: { width: 52, height: 52, borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 10 },
-    toolLabel: { fontSize: 13, fontWeight: '700', color: '#475569' },
+    branchHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 },
+    branchIcon: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#EFF6FF', alignItems: 'center', justifyContent: 'center' },
+    branchName: { fontSize: 15, fontWeight: '700', color: '#1E293B' },
+    branchAddress: { fontSize: 13, color: '#64748B', lineHeight: 20, marginLeft: 40, marginBottom: 12 },
+    directionBtn: { flexDirection: 'row', alignItems: 'center', marginLeft: 40, gap: 6 },
+    directionText: { fontSize: 13, fontWeight: '600', color: '#2563EB' },
 
-    promoBanner: {
-        margin: 20,
-        backgroundColor: '#4F46E5',
-        borderRadius: 24,
-        padding: 24,
-        flexDirection: 'row',
-        alignItems: 'center',
-        overflow: 'hidden',
-    },
-    promoText: { flex: 1, zIndex: 2 },
-    promoTitle: { fontSize: 18, fontWeight: '800', color: '#FFF', marginBottom: 6 },
-    promoDesc: { fontSize: 13, color: '#E0E7FF', lineHeight: 20, marginBottom: 16 },
-    promoBtn: { backgroundColor: '#FFF', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 10, alignSelf: 'flex-start' },
-    promoBtnText: { fontSize: 13, fontWeight: '700', color: '#4F46E5' },
-    promoIcon: { position: 'absolute', right: -10, bottom: -10 },
 });
 
 export default ExploreScreen;

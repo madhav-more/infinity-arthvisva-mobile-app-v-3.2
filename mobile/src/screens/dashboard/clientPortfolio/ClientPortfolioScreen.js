@@ -7,10 +7,12 @@ import {
     TextInput,
     ScrollView,
     RefreshControl,
-    ActivityIndicator
+    ActivityIndicator,
+    StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import theme from '../../../constants/theme';
 import { DashboardService } from '../../../services/dashboardService';
 import PortfolioFilters from './components/PortfolioFilters';
@@ -70,17 +72,19 @@ const ClientPortfolioScreen = () => {
         return matchesCategory && matchesProduct && matchesSearch;
     });
 
+    const activeClientsCount = leads.filter(l => l.source && !l.source.toLowerCase().includes('referral')).length;
+    const referralLeadsCount = leads.filter(l => l.source && l.source.toLowerCase().includes('referral')).length;
+
     const tabs = [
-        { id: 'clients', name: 'Clients' },
-        { id: 'applications', name: 'Applications' },
-        { id: 'documents', name: 'Documents' }
+        { id: 'clients', name: 'Clients', icon: 'people' },
+        { id: 'applications', name: 'Apps', icon: 'document-attach' },
+        { id: 'documents', name: 'Docs', icon: 'folder' }
     ];
 
     const renderTabContent = () => {
         if (activeTab === 'clients') {
             return (
                 <View style={styles.tableContainer}>
-                    <Text style={styles.sectionHeading}>Client Portfolio Details</Text>
                     <PortfolioTable data={filteredLeads} loading={loading} />
                 </View>
             );
@@ -88,41 +92,78 @@ const ClientPortfolioScreen = () => {
 
         return (
             <View style={styles.emptyContent}>
-                <Ionicons name="folder-open-outline" size={48} color={theme.colors.textSecondary} />
-                <Text style={styles.emptyText}>No {activeTab} found</Text>
+                <Ionicons name="folder-open-outline" size={64} color="#E2E8F0" />
+                <Text style={styles.emptyTitle}>No {activeTab} Records</Text>
+                <Text style={styles.emptySubtitle}>We couldn't find any {activeTab} associated with your account yet.</Text>
             </View>
         );
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+
+            {/* Premium Header */}
+            <LinearGradient
+                colors={['#1CADA3', '#2076C7']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.premiumHeader}
+            >
+                <SafeAreaView edges={['top']}>
+                    <View style={styles.headerContent}>
+                        <View>
+                            <Text style={styles.headerTitle}>Client Portfolio</Text>
+                            <Text style={styles.headerSubtitle}>Monitor and Manage your clients</Text>
+                        </View>
+                        <TouchableOpacity style={styles.headerIconBtn}>
+                            <Ionicons name="notifications-outline" size={24} color="#FFF" />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Summary Cards */}
+                    <View style={styles.summaryContainer}>
+                        <View style={styles.summaryCard}>
+                            <Text style={styles.summaryLabel}>Total Leads</Text>
+                            <Text style={styles.summaryValue}>{leads.length}</Text>
+                        </View>
+                        <View style={styles.summaryCard}>
+                            <Text style={styles.summaryLabel}>Referrals</Text>
+                            <Text style={styles.summaryValue}>{referralLeadsCount}</Text>
+                        </View>
+                        <View style={styles.summaryCard}>
+                            <Text style={styles.summaryLabel}>Active</Text>
+                            <Text style={styles.summaryValue}>{activeClientsCount}</Text>
+                        </View>
+                    </View>
+                </SafeAreaView>
+            </LinearGradient>
+
             <ScrollView
                 style={styles.scrollView}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.colors.brandBlue]} />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.brandBlue} />
                 }
+                showsVerticalScrollIndicator={false}
             >
                 <View style={styles.content}>
-                    {/* Header */}
-                    <View style={styles.header}>
-                        <Text style={styles.title}>My Client Portfolio</Text>
-                        <Text style={styles.subtitle}>Centralized management of all clients, leads, and applications</Text>
-                    </View>
-
-                    {/* Search Bar */}
-                    <View style={styles.searchContainer}>
-                        <Ionicons name="search" size={20} color={theme.colors.textSecondary} style={styles.searchIcon} />
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder="Search by Name, Lead ID, Contact..."
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                        />
-                        {searchQuery.length > 0 && (
-                            <TouchableOpacity onPress={() => setSearchQuery('')}>
-                                <Ionicons name="close-circle" size={20} color={theme.colors.textSecondary} />
-                            </TouchableOpacity>
-                        )}
+                    {/* Search Bar - Redesigned */}
+                    <View style={styles.searchSection}>
+                        <View style={styles.searchBar}>
+                            <Ionicons name="search" size={20} color={theme.colors.textSecondary} />
+                            <TextInput
+                                style={styles.searchInput}
+                                placeholder="Search by name, ID or contact..."
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                                placeholderTextColor={theme.colors.textSecondary}
+                            />
+                            {searchQuery.length > 0 && (
+                                <TouchableOpacity onPress={() => setSearchQuery('')}>
+                                    <Ionicons name="close-circle" size={20} color={theme.colors.textSecondary} />
+                                </TouchableOpacity>
+                            )}
+                        </View>
                     </View>
 
                     {/* Filters */}
@@ -133,170 +174,243 @@ const ClientPortfolioScreen = () => {
                         setSelectedProduct={setSelectedProduct}
                     />
 
-                    {/* Navigation Tabs */}
-                    <View style={styles.tabsContainer}>
-                        {tabs.map(tab => (
-                            <TouchableOpacity
-                                key={tab.id}
-                                style={[
-                                    styles.tab,
-                                    activeTab === tab.id && styles.activeTab
-                                ]}
-                                onPress={() => setActiveTab(tab.id)}
-                            >
-                                <Text style={[
-                                    styles.tabText,
-                                    activeTab === tab.id && styles.activeTabText
-                                ]}>
-                                    {tab.name}
-                                </Text>
-                                <View style={[
-                                    styles.countBadge,
-                                    activeTab === tab.id ? styles.activeCountBadge : styles.inactiveCountBadge
-                                ]}>
-                                    <Text style={[
-                                        styles.countText,
-                                        activeTab === tab.id ? styles.activeCountText : styles.inactiveCountText
-                                    ]}>
-                                        {tab.id === 'clients' ? filteredLeads.length : 0}
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        ))}
+                    {/* Navigation Tabs - Pill Redesign */}
+                    <View style={styles.tabsWrapper}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContainer}>
+                            {tabs.map(tab => {
+                                const isActive = activeTab === tab.id;
+                                return (
+                                    <TouchableOpacity
+                                        key={tab.id}
+                                        onPress={() => setActiveTab(tab.id)}
+                                        style={styles.tabContainer}
+                                    >
+                                        {isActive ? (
+                                            <LinearGradient
+                                                colors={['#1CADA3', '#2076C7']}
+                                                start={{ x: 0, y: 0 }}
+                                                end={{ x: 1, y: 0 }}
+                                                style={styles.activeTabGradient}
+                                            >
+                                                <Ionicons name={tab.icon} size={18} color="#FFF" />
+                                                <Text style={styles.activeTabText}>{tab.name}</Text>
+                                                <View style={styles.badgeWrapper}>
+                                                    <Text style={styles.badgeText}>
+                                                        {tab.id === 'clients' ? filteredLeads.length : 0}
+                                                    </Text>
+                                                </View>
+                                            </LinearGradient>
+                                        ) : (
+                                            <View style={styles.inactiveTabPill}>
+                                                <Ionicons name={`${tab.icon}-outline`} size={18} color={theme.colors.textSecondary} />
+                                                <Text style={styles.inactiveTabText}>{tab.name}</Text>
+                                            </View>
+                                        )}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </ScrollView>
                     </View>
 
                     {/* Tab Content */}
-                    {renderTabContent()}
+                    <View style={styles.mainContent}>
+                        <Text style={styles.sectionTitle}>
+                            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} List
+                        </Text>
+                        {renderTabContent()}
+                    </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.colors.background,
+        backgroundColor: '#F8FAFC',
+    },
+    premiumHeader: {
+        paddingBottom: 24,
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingTop: 16,
+        marginBottom: 24,
+    },
+    headerTitle: {
+        fontSize: 24,
+        fontWeight: '800',
+        color: '#FFF',
+        letterSpacing: -0.5,
+    },
+    headerSubtitle: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontWeight: '500',
+    },
+    headerIconBtn: {
+        width: 44,
+        height: 44,
+        borderRadius: 14,
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    summaryContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 24,
+        gap: 12,
+    },
+    summaryCard: {
+        flex: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        borderRadius: 20,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    summaryLabel: {
+        fontSize: 11,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+        marginBottom: 4,
+    },
+    summaryValue: {
+        fontSize: 20,
+        color: '#FFF',
+        fontWeight: '800',
     },
     scrollView: {
         flex: 1,
+        marginTop: -16, // Pull up to overlap with header curve
     },
     content: {
-        padding: 20,
+        paddingTop: 16,
     },
-    header: {
-        marginBottom: 32,
-        marginTop: 8,
+    searchSection: {
+        paddingHorizontal: 24,
+        marginBottom: 20,
     },
-    title: {
-        ...theme.typography.h1,
-        color: theme.colors.text,
-    },
-    subtitle: {
-        ...theme.typography.caption,
-        color: theme.colors.textSecondary,
-        marginTop: 6,
-        fontWeight: '500',
-    },
-    searchContainer: {
+    searchBar: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: theme.colors.surface,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-        borderRadius: 12,
+        backgroundColor: '#FFF',
+        borderRadius: 18,
         paddingHorizontal: 16,
-        height: 54,
-        marginBottom: 24,
+        height: 56,
         ...theme.shadow,
-    },
-    searchIcon: {
-        marginRight: 10,
+        borderWidth: 1.5,
+        borderColor: '#E2E8F0',
     },
     searchInput: {
         flex: 1,
+        marginLeft: 12,
         fontSize: 15,
-        color: theme.colors.text,
-        fontWeight: '500',
+        color: '#1E293B',
+        fontWeight: '600',
     },
-    tabsContainer: {
-        flexDirection: 'row',
-        gap: 10,
+    tabsWrapper: {
         marginBottom: 24,
     },
-    tab: {
+    tabsContainer: {
+        paddingHorizontal: 24,
+        gap: 12,
+    },
+    tabContainer: {
+        height: 44,
+    },
+    activeTabGradient: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 100,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-        backgroundColor: theme.colors.white,
-        ...theme.shadow,
-    },
-    activeTab: {
-        backgroundColor: theme.colors.brandBlue,
-        borderColor: theme.colors.brandBlue,
-    },
-    tabText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: theme.colors.textSecondary,
+        borderRadius: 22,
+        gap: 8,
     },
     activeTabText: {
-        color: theme.colors.white,
+        color: '#FFF',
+        fontSize: 14,
+        fontWeight: '700',
     },
-    countBadge: {
-        marginLeft: 8,
+    badgeWrapper: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 10,
     },
-    activeCountBadge: {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    },
-    inactiveCountBadge: {
-        backgroundColor: '#F1F5F9',
-    },
-    countText: {
+    badgeText: {
+        color: '#FFF',
         fontSize: 11,
-        fontWeight: '700',
+        fontWeight: '800',
     },
-    activeCountText: {
-        color: theme.colors.white,
+    inactiveTabPill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 22,
+        backgroundColor: '#FFF',
+        borderWidth: 1.5,
+        borderColor: '#E2E8F0',
+        gap: 8,
     },
-    inactiveCountText: {
+    inactiveTabText: {
         color: theme.colors.textSecondary,
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    mainContent: {
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1E293B',
+        marginBottom: 16,
+        letterSpacing: -0.3,
     },
     tableContainer: {
-        flex: 1,
-        backgroundColor: theme.colors.surface,
-        borderRadius: 20,
-        padding: 16,
-        ...theme.shadow,
+        backgroundColor: '#FFF',
+        borderRadius: 24,
+        overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#F1F5F9',
-    },
-    sectionHeading: {
-        ...theme.typography.h3,
-        color: theme.colors.text,
-        marginBottom: 20,
+        borderColor: '#E2E8F0',
+        ...theme.shadow,
     },
     emptyContent: {
-        padding: 60,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: theme.colors.surface,
-        borderRadius: 20,
-        marginTop: 20,
+        paddingVertical: 60,
+        backgroundColor: '#FFF',
+        borderRadius: 24,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
+        borderStyle: 'dashed',
     },
-    emptyText: {
-        ...theme.typography.body,
-        color: theme.colors.textSecondary,
+    emptyTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#334155',
         marginTop: 16,
-        fontWeight: '500',
+    },
+    emptySubtitle: {
+        fontSize: 14,
+        color: '#64748B',
+        textAlign: 'center',
+        marginTop: 8,
+        paddingHorizontal: 40,
+        lineHeight: 20,
     },
 });
 
 export default ClientPortfolioScreen;
+

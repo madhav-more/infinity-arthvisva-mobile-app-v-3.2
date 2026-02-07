@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     FlatList,
     TextInput,
-    SafeAreaView,
     ActivityIndicator,
     RefreshControl,
     StatusBar,
@@ -15,6 +14,7 @@ import {
     Dimensions,
     ScrollView
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { DashboardService } from '../../../services/dashboardService';
 import ReferralLeadModal from './ReferralLeadModal';
@@ -54,18 +54,22 @@ export default function LeadManagementScreen({ navigation }) {
 
     // Column Widths
     const COL_WIDTHS = {
-        ID: 110,
-        NAME: 130,
-        CONTACT: 120,
+        REID: 70,
+        COL_REID: 58,
+        ID: 83,
+        NAME: 90,
+        CONTACT: 100,
         EMAIL: 180,
-        DEPT_PROD: 160,
-        NOTES_DATE: 200,
-        SELF_LOGIN: 90,
-        ACTIONS: 160,
+        DEPT_PROD: 100,
+        NOTES_DATE: 90,
+        SELF_LOGIN: 69,
+        ACTIONS: 100,
+        EXTRA: 20,
     };
 
-    const TABLE_WIDTH_REFERRAL = COL_WIDTHS.ID + COL_WIDTHS.NAME + COL_WIDTHS.CONTACT + COL_WIDTHS.DEPT_PROD + COL_WIDTHS.NOTES_DATE;
-    const TABLE_WIDTH_DETAILED = COL_WIDTHS.ID + COL_WIDTHS.NAME + COL_WIDTHS.CONTACT + COL_WIDTHS.EMAIL + COL_WIDTHS.DEPT_PROD + COL_WIDTHS.SELF_LOGIN + COL_WIDTHS.ACTIONS + COL_WIDTHS.NOTES_DATE;
+    const TABLE_WIDTH_REFERRAL = COL_WIDTHS.REID + COL_WIDTHS.NAME + COL_WIDTHS.CONTACT + COL_WIDTHS.DEPT_PROD + COL_WIDTHS.NOTES_DATE;
+    const TABLE_WIDTH_DETAILED = COL_WIDTHS.ID + COL_WIDTHS.NAME + COL_WIDTHS.CONTACT + COL_WIDTHS.EXTRA + COL_WIDTHS.DEPT_PROD + COL_WIDTHS.SELF_LOGIN + COL_WIDTHS.ACTIONS + COL_WIDTHS.NOTES_DATE;
+
 
     const fetchLeads = useCallback(async (showLoading = true) => {
         try {
@@ -175,7 +179,7 @@ export default function LeadManagementScreen({ navigation }) {
     // --- TABLE HEADERS ---
     const ReferralTableHeader = () => (
         <View style={[styles.tableHeader, { width: TABLE_WIDTH_REFERRAL }]}>
-            <View style={[styles.headerCell, { width: COL_WIDTHS.ID }]}>
+            <View style={[styles.headerCell, { width: COL_WIDTHS.REID }]}>
                 <Text style={styles.headerCellText}>Lead ID</Text>
             </View>
             <View style={[styles.headerCell, { width: COL_WIDTHS.NAME }]}>
@@ -204,9 +208,9 @@ export default function LeadManagementScreen({ navigation }) {
             <View style={[styles.headerCell, { width: COL_WIDTHS.CONTACT }]}>
                 <Text style={styles.headerCellText}>Contact</Text>
             </View>
-            <View style={[styles.headerCell, { width: COL_WIDTHS.EMAIL }]}>
+            {/* <View style={[styles.headerCell, { width: COL_WIDTHS.EMAIL }]}>
                 <Text style={styles.headerCellText}>Email</Text>
-            </View>
+            </View> */}
             <View style={[styles.headerCell, { width: COL_WIDTHS.DEPT_PROD }]}>
                 <Text style={styles.headerCellText}>Dept / Product</Text>
             </View>
@@ -223,9 +227,10 @@ export default function LeadManagementScreen({ navigation }) {
     );
 
     // --- REFERRAL LEADS ROW ---
+    // --- REFERRAL LEADS ROW ---
     const ReferralLeadRow = ({ item, index }) => (
         <View style={[styles.tableRow, index % 2 === 1 && styles.tableRowEven, { width: TABLE_WIDTH_REFERRAL }]}>
-            <View style={[styles.cell, { width: COL_WIDTHS.ID }]}>
+            <View style={[styles.cell, { width: COL_WIDTHS.COL_REID }]}>
                 <Text style={styles.cellText}>{item.ref_id || 'N/A'}</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTHS.NAME }]}>
@@ -262,12 +267,38 @@ export default function LeadManagementScreen({ navigation }) {
             <View style={[styles.cell, { width: COL_WIDTHS.NAME }]}>
                 <Text style={[styles.cellText, styles.textPrimary]}>{item.lead_name}</Text>
             </View>
+
+            {/* <View style={[styles.cell, { width: COL_WIDTHS.CONTACT }]}>
+                <Text style={styles.cellText}>{item.contact_number}</Text>
+            </View>
+            <View style={[styles.cell, { width: COL_WIDTHS.EMAIL }]}>
+                <Text style={styles.cellText} numberOfLines={1}>{item.email}</Text>
+            </View> */}
+
+
+            <View style={[styles.cell, { width: COL_WIDTHS.CONTACT }]}>
+                <View style={[styles.stackedContainer]}>
+                    <View style={[styles.tableBadge, styles.badgeDept]}>
+                        <Text style={styles.tableBadgeText} numberOfLines={1}>{item.contact_number || '-'}</Text>
+                    </View>
+                    <View style={[styles.tableBadge, styles.badgeProd]}>
+                        <Text style={styles.tableBadgeText} numberOfLines={1}>{item.email || '-'}</Text>
+                    </View>
+                </View>
+
+
+            </View>
+
+
+            {/* 
             <View style={[styles.cell, { width: COL_WIDTHS.CONTACT }]}>
                 <Text style={styles.cellText}>{item.contact_number}</Text>
             </View>
             <View style={[styles.cell, { width: COL_WIDTHS.EMAIL }]}>
                 <Text style={styles.cellText} numberOfLines={1}>{item.email}</Text>
-            </View>
+            </View> */}
+
+
             <View style={[styles.cell, { width: COL_WIDTHS.DEPT_PROD }]}>
                 <View style={[styles.stackedContainer]}>
                     <View style={[styles.tableBadge, styles.badgeDept]}>
@@ -278,6 +309,12 @@ export default function LeadManagementScreen({ navigation }) {
                     </View>
                 </View>
             </View>
+
+
+
+
+
+
             <View style={[styles.cell, { width: COL_WIDTHS.SELF_LOGIN, alignItems: 'center' }]}>
                 <View style={[
                     styles.statusBadge,
@@ -286,6 +323,10 @@ export default function LeadManagementScreen({ navigation }) {
                     <Text style={styles.statusText}>{item.is_self_login}</Text>
                 </View>
             </View>
+
+
+
+
             <View style={[styles.cell, { width: COL_WIDTHS.ACTIONS }]}>
                 <View style={styles.tableActionGroup}>
                     <TouchableOpacity
@@ -304,6 +345,11 @@ export default function LeadManagementScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
             </View>
+
+
+
+
+
             <View style={[styles.cell, { width: COL_WIDTHS.NOTES_DATE }]}>
                 <View style={styles.stackedContainer}>
                     <Text style={[styles.cellText, styles.notesText]} numberOfLines={1}>{item.notes || '-'}</Text>
@@ -312,6 +358,7 @@ export default function LeadManagementScreen({ navigation }) {
             </View>
         </View>
     );
+
 
     // Render item based on active tab
     const renderItem = ({ item, index }) => {

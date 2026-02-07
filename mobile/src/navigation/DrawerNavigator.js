@@ -32,6 +32,10 @@ import SMELoanFormScreen from '../screens/dashboard/detailed/forms/loans/SMELoan
 import NRPLoanFormScreen from '../screens/dashboard/detailed/forms/loans/NRPLoanFormScreen';
 import VehicleLoanFormScreen from '../screens/dashboard/detailed/forms/loans/VehicleLoanFormScreen';
 import LoanAgainstSecuritiesFormScreen from '../screens/dashboard/detailed/forms/loans/LoanAgainstSecuritiesFormScreen';
+import CattleInsuranceFormScreen from '../screens/dashboard/detailed/forms/insurance/CattleInsuranceFormScreen';
+import TravelInsuranceFormScreen from '../screens/dashboard/detailed/forms/insurance/TravelInsuranceFormScreen';
+import LifeInsuranceFormScreen from '../screens/dashboard/detailed/forms/insurance/LifeInsuranceFormScreen';
+import HealthInsuranceFormScreen from '../screens/dashboard/detailed/forms/insurance/HealthInsuranceFormScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -120,6 +124,10 @@ const DrawerNavigator = () => {
             <Drawer.Screen name="NRPLoanForm" component={NRPLoanFormScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
             <Drawer.Screen name="VehicleLoanForm" component={VehicleLoanFormScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
             <Drawer.Screen name="LoanAgainstSecuritiesForm" component={LoanAgainstSecuritiesFormScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
+            <Drawer.Screen name="CattleInsuranceForm" component={CattleInsuranceFormScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
+            <Drawer.Screen name="TravelInsuranceForm" component={TravelInsuranceFormScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
+            <Drawer.Screen name="LifeInsuranceForm" component={LifeInsuranceFormScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
+            <Drawer.Screen name="HealthInsuranceForm" component={HealthInsuranceFormScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
 
         </Drawer.Navigator>
     );

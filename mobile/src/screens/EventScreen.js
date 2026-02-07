@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-    View,   
+    View,
     Text,
     StyleSheet,
     ScrollView,
@@ -9,94 +9,119 @@ import {
     Image,
     Dimensions,
     SafeAreaView,
-    StatusBar
+    StatusBar,
+    Platform
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import theme from '../constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
 const EventScreen = () => {
+    const [activeCategory, setActiveCategory] = useState('All');
+
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+            <View style={styles.header}>
+                <Text style={styles.title}>Achievements & Insights</Text>
+            </View>
 
-                {/* 📚 HEADER */}
-                <View style={styles.header}>
-                    <Text style={styles.title}>Knowledge Hub</Text>
-                    <Text style={styles.subtitle}>Master your finances with expert insights</Text>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
+                {/* 🏆 AWARDS SECTION (NEW) */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Recognition</Text>
+                    <LinearGradient
+                        colors={['#FFFBEB', '#FFF7ED']}
+                        style={styles.awardCard}
+                    >
+                        <View style={styles.awardContent}>
+                            <View style={styles.awardBadge}>
+                                <Ionicons name="trophy" size={14} color="#B45309" />
+                                <Text style={styles.awardBadgeText}>WINNER</Text>
+                            </View>
+                            <Text style={styles.awardTitle}>ET Business Awards 2025</Text>
+                            <Text style={styles.awardSubtitle}>Recognized for Excellence in Financial Advisory & Customer Trust in Pune.</Text>
+                        </View>
+                        <Image
+                            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/3112/3112946.png' }}
+                            style={styles.awardImg}
+                        />
+                    </LinearGradient>
+                </View>
+
+                {/* 🔍 SEARCH & CATEGORIES */}
+                <View style={styles.filterSection}>
                     <View style={styles.searchBar}>
-                        <Ionicons name="search" size={20} color={theme.colors.textSecondary} />
+                        <Ionicons name="search-outline" size={20} color="#94A3B8" />
                         <TextInput
-                            placeholder="Search articles, guides..."
+                            placeholder="Search guides..."
+                            placeholderTextColor="#94A3B8"
                             style={styles.searchInput}
-                            placeholderTextColor={theme.colors.textSecondary}
                         />
                     </View>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.catScroll}>
+                        {categories.map((cat, idx) => (
+                            <TouchableOpacity
+                                key={idx}
+                                style={[styles.catBtn, activeCategory === cat && styles.catBtnActive]}
+                                onPress={() => setActiveCategory(cat)}
+                            >
+                                <Text style={[styles.catText, activeCategory === cat && styles.catTextActive]}>{cat}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
                 </View>
 
-                {/* 🏷️ CATEGORIES */}
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-                    {categories.map((cat, idx) => (
-                        <TouchableOpacity key={idx} style={[styles.categoryBtn, idx === 0 && styles.categoryBtnActive]}>
-                            <Text style={[styles.categoryText, idx === 0 && styles.categoryTextActive]}>{cat}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-
-                {/* 🏆 FEATURED CONTENT */}
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Featured Guides</Text>
-                    <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
-                </View>
-
-                <View style={styles.featuredList}>
+                {/* 📚 KNOWLEDGE HUB */}
+                <View style={styles.feedSection}>
                     {articles.map((item, idx) => (
                         <TouchableOpacity key={idx} style={styles.articleCard}>
-                            <Image source={{ uri: item.image }} style={styles.articleImg} />
-                            <View style={styles.articleContent}>
-                                <View style={styles.metaRow}>
-                                    <View style={[styles.tag, { backgroundColor: item.color + '15' }]}>
-                                        <Text style={[styles.tagText, { color: item.color }]}>{item.category}</Text>
-                                    </View>
-                                    <Text style={styles.readTime}>{item.time}</Text>
+                            <View style={styles.articleImageContainer}>
+                                <Image source={{ uri: item.image }} style={styles.articleImg} />
+                                <View style={styles.categoryTag}>
+                                    <Text style={styles.categoryTagText}>{item.category}</Text>
                                 </View>
+                            </View>
+                            <View style={styles.articleContent}>
                                 <Text style={styles.articleTitle} numberOfLines={2}>{item.title}</Text>
                                 <Text style={styles.articleDesc} numberOfLines={2}>{item.desc}</Text>
 
-                                <View style={styles.cardFooter}>
-                                    <View style={styles.authorGroup}>
-                                        <Image source={{ uri: 'https://i.pravatar.cc/150?u=' + idx }} style={styles.authorImg} />
+                                <View style={styles.articleFooter}>
+                                    <View style={styles.authorRow}>
+                                        <View style={styles.authorAvatar}>
+                                            <Text style={styles.authorInitials}>{item.author.charAt(0)}</Text>
+                                        </View>
                                         <Text style={styles.authorName}>{item.author}</Text>
                                     </View>
-                                    <TouchableOpacity style={styles.bookmarkBtn}>
-                                        <Ionicons name="bookmark-outline" size={18} color={theme.colors.textSecondary} />
-                                    </TouchableOpacity>
+                                    <View style={styles.timeRow}>
+                                        <Ionicons name="time-outline" size={14} color="#94A3B8" />
+                                        <Text style={styles.timeText}>{item.time}</Text>
+                                    </View>
                                 </View>
                             </View>
                         </TouchableOpacity>
                     ))}
                 </View>
 
-                <View style={{ height: 40 }} />
             </ScrollView>
         </SafeAreaView>
     );
 };
 
-const categories = ['All', 'Loans', 'Investments', 'Wealth Management', 'Insurance', 'Tax Planning'];
+// --- DATA ---
+const categories = ['All', 'Loans', 'Wealth', 'Insurance', 'Tax', 'Market'];
 
 const articles = [
     {
         title: '7 Secret Tips to Improve Your Credit Score in 2026',
         desc: 'Learn how to boost your creditworthiness and unlock better loan interest rates with these simple steps.',
-        category: 'LOANS',
+        category: 'FINANCE',
         time: '5 min read',
         author: 'Sarah Johnson',
-        image: 'https://images.unsplash.com/photo-1554224155-1696413565d3?w=800&q=80',
-        color: '#3B82F6'
+        image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80',
     },
     {
         title: 'Why Portfolio Diversification is More Important Than Ever',
@@ -104,8 +129,7 @@ const articles = [
         category: 'WEALTH',
         time: '8 min read',
         author: 'Michael Chen',
-        image: 'https://images.unsplash.com/photo-1611974717482-aa8a6a284aa2?w=800&q=80',
-        color: '#8B5CF6'
+        image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=800&q=80',
     },
     {
         title: 'Choosing a Life Insurance Policy: A Complete Guide',
@@ -114,175 +138,91 @@ const articles = [
         time: '6 min read',
         author: 'David Wilson',
         image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80',
-        color: '#10B981'
     }
 ];
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F8FAFC',
-    },
+    container: { flex: 1, backgroundColor: '#F8FAFC' },
+
     header: {
+        paddingHorizontal: 20,
+        paddingTop: Platform.OS === 'android' ? 20 : 10,
+        paddingBottom: 16,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#F1F5F9'
+    },
+    title: { fontSize: 24, fontWeight: '800', color: '#1E293B', letterSpacing: -0.5 },
+
+    section: { marginTop: 24, paddingHorizontal: 20 },
+    sectionTitle: { fontSize: 13, fontWeight: '700', color: '#64748B', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 },
+
+    awardCard: {
+        borderRadius: 20,
         padding: 20,
-        paddingTop: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#FEF3C7',
+        shadowColor: '#F59E0B',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 2,
     },
-    title: {
-        fontSize: 28,
-        fontWeight: '800',
-        color: '#1E293B',
-    },
-    subtitle: {
-        fontSize: 16,
-        color: '#64748B',
-        marginTop: 4,
-        marginBottom: 20,
-    },
+    awardContent: { flex: 1 },
+    awardBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FEF3C7', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, marginBottom: 8, gap: 4 },
+    awardBadgeText: { fontSize: 10, fontWeight: '800', color: '#B45309' },
+    awardTitle: { fontSize: 18, fontWeight: '800', color: '#78350F', marginBottom: 4 },
+    awardSubtitle: { fontSize: 13, color: '#92400E', lineHeight: 18 },
+    awardImg: { width: 64, height: 64, marginLeft: 12 },
+
+    filterSection: { marginTop: 24, paddingHorizontal: 20 },
     searchBar: {
+        backgroundColor: '#FFF',
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
-        height: 52,
-        borderRadius: 16,
         paddingHorizontal: 16,
-        ...theme.shadow,
+        height: 48,
+        borderRadius: 14,
         borderWidth: 1,
         borderColor: '#E2E8F0',
-    },
-    searchInput: {
-        flex: 1,
-        marginLeft: 12,
-        fontSize: 15,
-        color: '#1E293B',
-    },
-
-    categoryScroll: {
-        paddingLeft: 20,
-        marginBottom: 28,
-    },
-    categoryBtn: {
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 12,
-        backgroundColor: '#FFF',
-        marginRight: 10,
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
-    },
-    categoryBtnActive: {
-        backgroundColor: theme.colors.primary,
-        borderColor: theme.colors.primary,
-    },
-    categoryText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#64748B',
-    },
-    categoryTextActive: {
-        color: '#FFF',
-    },
-
-    sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
         marginBottom: 16,
     },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: '800',
-        color: '#1E293B',
-    },
-    seeAll: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: theme.colors.primary,
-    },
+    searchInput: { flex: 1, marginLeft: 10, fontSize: 14, color: '#334155' },
+    catScroll: { marginHorizontal: -20, paddingHorizontal: 20 },
+    catBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 100, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#E2E8F0', marginRight: 8 },
+    catBtnActive: { backgroundColor: '#1E293B', borderColor: '#1E293B' },
+    catText: { fontSize: 13, fontWeight: '600', color: '#64748B' },
+    catTextActive: { color: '#FFF' },
 
-    featuredList: {
-        paddingHorizontal: 20,
-        gap: 20,
-    },
+    feedSection: { marginTop: 24, paddingHorizontal: 20, gap: 20 },
     articleCard: {
         backgroundColor: '#FFF',
-        borderRadius: 24,
+        borderRadius: 20,
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: '#F1F5F9',
-        ...theme.shadow,
+        shadowColor: '#64748B',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.05,
+        shadowRadius: 16,
+        elevation: 3,
     },
-    articleImg: {
-        width: '100%',
-        height: 200,
-    },
-    articleContent: {
-        padding: 20,
-    },
-    metaRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    tag: {
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 8,
-    },
-    tagText: {
-        fontSize: 10,
-        fontWeight: '800',
-    },
-    readTime: {
-        fontSize: 12,
-        color: '#94A3B8',
-        fontWeight: '500',
-    },
-    articleTitle: {
-        fontSize: 18,
-        fontWeight: '800',
-        color: '#1E293B',
-        lineHeight: 24,
-        marginBottom: 8,
-    },
-    articleDesc: {
-        fontSize: 14,
-        color: '#64748B',
-        lineHeight: 20,
-        marginBottom: 20,
-    },
-    cardFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderTopWidth: 1,
-        borderTopColor: '#F8FAFC',
-        paddingTop: 16,
-    },
-    authorGroup: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-    },
-    authorImg: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-    },
-    authorName: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#475569',
-    },
-    bookmarkBtn: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F8FAFC',
-    }
+    articleImageContainer: { height: 180, width: '100%', position: 'relative' },
+    articleImg: { width: '100%', height: '100%' },
+    categoryTag: { position: 'absolute', top: 16, left: 16, backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, backdropFilter: 'blur(10px)' },
+    categoryTagText: { color: '#FFF', fontSize: 10, fontWeight: '700' },
+    articleContent: { padding: 16 },
+    articleTitle: { fontSize: 16, fontWeight: '700', color: '#1E293B', marginBottom: 8, lineHeight: 22 },
+    articleDesc: { fontSize: 13, color: '#64748B', lineHeight: 18, marginBottom: 16 },
+    articleFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F8FAFC', paddingTop: 12 },
+    authorRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    authorAvatar: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' },
+    authorInitials: { fontSize: 10, fontWeight: '700', color: '#64748B' },
+    authorName: { fontSize: 12, fontWeight: '600', color: '#475569' },
+    timeRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+    timeText: { fontSize: 12, color: '#94A3B8' },
 });
 
 export default EventScreen;
